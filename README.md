@@ -1,40 +1,31 @@
-# eslintd-fix
+# rufo.el
 
-[![MELPA](https://melpa.org/packages/eslintd-fix-badge.svg)](https://melpa.org/#/eslintd-fix)
-[![MELPA Stable](https://stable.melpa.org/packages/eslintd-fix-badge.svg)](https://stable.melpa.org/#/eslintd-fix)
+TODO: add to melpa
 
-Minor-mode to automatically fix javascript with [eslint_d][]. Built with a focus on speed, you will typically barely notice a delay when saving, if at all. 
-
-## Installation
-
-You can install this package from [Melpa][]
-
-```
-M-x package-install RET eslintd-fix RET
-```
+Minor-mode to automatically format ruby with [rufo][].
 
 ## Usage
 
-Ensure that you have [eslint_d][] installed and in your path.
+Ensure that you have [rufo][] installed and in your path.
 
 Then, in your `init.el`:
 
 ```elisp
-(add-hook 'js2-mode-hook 'eslintd-fix-mode)
+(add-hook 'ruby-mode 'rufo-mode)
 ```
 
 ## Options
 
-You can change the location of eslint_d. 
+You can change the location of [rufo][]. 
 
 ```elisp
-(setq eslintd-fix-executable "/my/path/eslint_d")
+(setq rufo-mode-executable "bundle exec rufo")
 ```
 
 ## Thanks
 
-* [@mantoni][] for [eslint_d][].
+* [@aaronjensen][] for [eslintd-fix][], which I forked for this project
 
-[eslint_d]: https://github.com/mantoni/eslint_d.js
-[@mantoni]: https://github.com/mantoni
-[Melpa]: http://melpa.milkbox.net/
+[rufo]: https://github.com/asterite/rufo
+[eslint_d-fix]: https://github.com/aaronjensen/eslintd-fix
+[@aaronjensen]: https://github.com/aaronjensen
