@@ -1,23 +1,46 @@
-(defun assert-format-with-no-errors ()
+(defun reset-custom-variables (variables)
+  (dolist (var variables)
+    (set var (eval (car (get var 'standard-value))))))
+
+(defmacro with-test-setup (&rest body)
+  "Create a temporary buffer and test setup, and evaluate BODY there like `progn`."
+  `(progn
+     (reset-custom-variables (list 'rufo-mode-executable 'rufo-mode-use-bundler 'rufo-mode-debug-mode))
+     (with-temp-buffer
+       (progn ,@body)))
+  )
+
+(defun assert-global-executable-format ()
+  (setq rufo-mode-executable
+        (concat
+         (replace-regexp-in-string "\n$" "" 
+                                   (shell-command-to-string "bundle show rufo"))
+         "/exe/rufo"))
   (rufo-format))
-  ;; (should (equal (get-buffer "*rufo-mode error*") nil)))
+
+(ert-deftest verify-format-with-filename ()
+  (with-test-setup
+   (setq buffer-file-name "source.rb")
+   (insert "[ 1 ]")
+   (assert-global-executable-format)
+   (should (equal (buffer-string) "[1]\n"))))
 
 (ert-deftest verify-format-size-1 ()
-  (with-temp-buffer
-    (insert "[ 1 ]")
-    (assert-format-with-no-errors)
-    (should (equal (buffer-string) "[1]\n"))))
+  (with-test-setup
+   (insert "[ 1 ]")
+   (assert-global-executable-format)
+   (should (equal (buffer-string) "[1]\n"))))
 
 (ert-deftest verify-format-size-2 ()
-  (with-temp-buffer
-    (insert "
+  (with-test-setup
+   (insert "
 class NeedsFormatting
   def method no_parens
    [poorly_indented, no_parens ]
   end
 end;")
-    (assert-format-with-no-errors)
-    (should (equal (buffer-string) "
+   (assert-global-executable-format)
+   (should (equal (buffer-string) "
 class NeedsFormatting
   def method(no_parens)
     [poorly_indented, no_parens]
@@ -26,8 +49,8 @@ end
 "))))
 
 (ert-deftest verify-format-size-3 ()
-  (with-temp-buffer
-    (setq valid-ruby "
+  (with-test-setup
+   (setq valid-ruby "
 class ApplicationController < ActionController::Base
   helper ApplicationHelper
 
@@ -65,14 +88,30 @@ class ApplicationController < ActionController::Base
   end
 end
 ")
-    (insert valid-ruby)
-    (assert-format-with-no-errors)
-    (should (equal (buffer-string) valid-ruby))))
+   (insert valid-ruby)
+   (assert-global-executable-format)
+   (should (equal (buffer-string) valid-ruby))))
+
+(ert-deftest verify-bundle-format ()
+  (with-test-setup
+   (insert "[ 1 ]")
+   (setq rufo-mode-use-bundler t)
+   (rufo-format)
+   (should (equal (buffer-string) "[1]\n"))))
+
+(ert-deftest failure-with-bad-rufo ()
+  (with-test-setup
+   (insert "[ 1 ]")
+   (setq rufo-mode-executable "rufa")
+   (rufo-format)
+   (with-current-buffer "*Messages*"
+     (should (s-contains? "Could not find rufo." (buffer-string))))
+   (should (equal (buffer-string) "[ 1 ]"))))
 
 (ert-deftest debug-mode-should-show-diff ()
-  (with-temp-buffer
-    (insert "[ 1 ]")
-    (setq rufo-mode-debug-mode t)
-    (assert-format-with-no-errors)
-    (with-current-buffer (messages-buffer)
-      (should (s-contains? "d1" (buffer-string))))))
+  (with-test-setup
+   (insert "[ 1 ]")
+   (setq rufo-mode-debug-mode t)
+   (assert-global-executable-format)
+   (with-current-buffer "*Messages*"
+     (should (s-contains? "d1" (buffer-string))))))

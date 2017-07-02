@@ -49,6 +49,11 @@
   :group 'rufo-mode
   :type 'string)
 
+(defcustom rufo-mode-use-bundler nil
+  "Whether rufo-mode should use the bundler version of rufo."
+  :group 'rufo-mode
+  :type 'boolean)
+
 (defcustom rufo-mode-debug-mode nil
   "Whether rufo-mode should message debug information."
   :group 'rufo-mode
@@ -132,16 +137,32 @@ function."
              (t
               (error "Invalid rcs patch or internal error in rufo-mode--apply-rcs-patch")))))))))
 
+(defun rufo-mode--executable ()
+  "Return the executable for running rufo."
+  (if rufo-mode-use-bundler
+      (executable-find "bundle")
+    (executable-find rufo-mode-executable)))
+
+(defun rufo-mode--args ()
+  "Get the args for calling rufo."
+  (let ((args
+         (append
+          (if rufo-mode-use-bundler (list "exec" rufo-mode-executable))
+          (if buffer-file-name (list (concat "--filename=" buffer-file-name))))))
+    (if (< 0 (length args)) args)))
+
 (defun rufo-mode--executable-available-p ()
   "Verify that the rufo executable exists."
-  (let ((executable (executable-find rufo-mode-executable)))
+  (let ((executable (rufo-mode--executable))
+        (args (rufo-mode--args)))
     (and executable
-         (file-executable-p executable)
          (zerop (call-process-shell-command (concat
-                                "("
-                                executable
-                                " --help"
-                                ")"))))))
+                                             "("
+                                             executable
+                                             " "
+                                             (if args (mapconcat 'identity args " "))
+                                             " --help"
+                                             ")"))))))
 
 (defun rufo-mode--verify ()
   "Set rufo-mode--verified to true if the executable is runnable."
@@ -169,10 +190,10 @@ function."
          (errorfile (make-temp-file "rufo-errors" nil ext))
          (errbuf (get-buffer-create "*rufo errors*"))
          (patchbuf (get-buffer-create "*rufo patch*"))
-         (executable (executable-find rufo-mode-executable))
+         (executable (rufo-mode--executable))
          (coding-system-for-read 'utf-8)
          (coding-system-for-write 'utf-8)
-         (rufo-args (concat "--filename=" buffer-file-name))
+         (rufo-args (rufo-mode--args))
          )
     (if (rufo-mode--verify)
         (unwind-protect
@@ -182,7 +203,9 @@ function."
                 (erase-buffer)))
           (with-current-buffer patchbuf
             (erase-buffer))
-          (call-process-region nil nil executable nil (list :file outputfile) nil rufo-args)
+          (if rufo-args
+              (apply 'call-process-region nil nil executable nil (list :file outputfile) nil rufo-args)
+            (call-process-region nil nil executable nil (list :file outputfile) nil))
           ;; (with-current-buffer errbuf
           ;;   (insert-file-contents errorfile)
           ;;   (if (string-equal "" (buffer-string))
