@@ -50,6 +50,7 @@ end
 
 (ert-deftest verify-format-size-3 ()
   (with-test-setup
+   (setq rufo-mode-debug-mode t)
    (setq valid-ruby "
 class ApplicationController < ActionController::Base
   helper ApplicationHelper

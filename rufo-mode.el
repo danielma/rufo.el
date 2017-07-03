@@ -204,13 +204,9 @@ function."
           (with-current-buffer patchbuf
             (erase-buffer))
           (if rufo-args
-              (apply 'call-process-region nil nil executable nil (list :file outputfile) nil rufo-args)
-            (call-process-region nil nil executable nil (list :file outputfile) nil))
-          ;; (with-current-buffer errbuf
-          ;;   (insert-file-contents errorfile)
-          ;;   (if (string-equal "" (buffer-string))
-          ;;       (message (buffer-string))))
-          (call-process-region nil nil "diff" nil patchbuf nil "-n" "-" outputfile)
+              (apply 'call-process-region (point-min) (point-max) executable nil (list :file outputfile) nil rufo-args)
+            (call-process-region (point-min) (point-max) executable nil (list :file outputfile) nil))
+          (call-process-region nil nil "diff" nil patchbuf nil "-n" "--text" "-" outputfile)
           (rufo-mode--apply-rcs-patch patchbuf)
           (message "Applied rufo with args `%s'" rufo-args)
           (if errbuf (rufo-mode--kill-error-buffer errbuf))))
