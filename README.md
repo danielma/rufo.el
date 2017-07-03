@@ -1,4 +1,4 @@
-# rufo-mode.el
+# rufo-mode.el [![Build Status](https://travis-ci.org/danielma/rufo-mode.el.svg?branch=master)](https://travis-ci.org/danielma/rufo-mode.el)
 
 TODO: add to melpa
 
