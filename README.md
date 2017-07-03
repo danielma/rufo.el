@@ -35,5 +35,5 @@ You can enable `rufo-mode-debug-mode` which will output additional info into the
 * [@aaronjensen][] for [eslintd-fix][], which I forked for this project
 
 [rufo]: https://github.com/asterite/rufo
-[eslint_d-fix]: https://github.com/aaronjensen/eslintd-fix
+[eslintd-fix]: https://github.com/aaronjensen/eslintd-fix
 [@aaronjensen]: https://github.com/aaronjensen
