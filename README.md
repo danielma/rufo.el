@@ -1,4 +1,4 @@
-# rufo.el
+# rufo-mode.el
 
 TODO: add to melpa
 
@@ -16,11 +16,19 @@ Then, in your `init.el`:
 
 ## Options
 
+`rufo-mode` has first-class support for using rufo with bundler
+
+```elisp
+(setq rufo-mode-use-bundler t)
+```
+
 You can change the location of [rufo][]. 
 
 ```elisp
-(setq rufo-mode-executable "bundle exec rufo")
+(setq rufo-mode-executable "rufa")
 ```
+
+You can enable `rufo-mode-debug-mode` which will output additional info into the messages buffer
 
 ## Thanks
 

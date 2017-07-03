@@ -4,8 +4,8 @@
 
 ;; Author: Daniel Ma <danielhgma@gmail.com>
 ;; URL: https://github.com/danielma/rufo-mode
-;; Version: 0.0.1
-;; Package-Version: 0.0.1
+;; Version: 0.2.0
+;; Package-Version: 0.2.0
 ;; Package-Requires: ((emacs "24.3"))
 
 ;;; Commentary:
