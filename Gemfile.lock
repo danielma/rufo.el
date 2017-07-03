@@ -1,0 +1,13 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rufo (0.0.32)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rufo (>= 0.0.32)
+
+BUNDLED WITH
+   1.15.1
