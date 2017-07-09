@@ -1,73 +1,82 @@
-;;; rufo-mode.el --- use rufo to automatically format ruby files
+;;; rufo.el --- use rufo to automatically format ruby files
 
-;; Copyright (C) 2017 by Daniel Ma
+;; Copyright (c) 2014 The go-mode Authors. All rights reserved.
+;; Portions Copyright (C) 2017 Daniel Ma. All rights reserved.
+;; 
+;; Redistribution and use in source and binary forms, with or without
+;; modification, are permitted provided that the following conditions are
+;; met:
+;; 
+;;    * Redistributions of source code must retain the above copyright
+;; notice, this list of conditions and the following disclaimer.
+;;    * Redistributions in binary form must reproduce the above
+;; copyright notice, this list of conditions and the following disclaimer
+;; in the documentation and/or other materials provided with the
+;; distribution.
+;;    * Neither the name of the copyright holder nor the names of its
+;; contributors may be used to endorse or promote products derived from
+;; this software without specific prior written permission.
+;; 
+;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+;; "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+;; LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+;; A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+;; OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+;; SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+;; LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+;; DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+;; THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+;; (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+;; OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-;; Author: Daniel Ma <danielhgma@gmail.com>
-;; URL: https://github.com/danielma/rufo-mode
+;; This file is not part of GNU Emacs.
+
+;; Author: Daniel Ma <danielhgma@gmail.com> and contributors
+;; URL: https://github.com/danielma/rufo.el
 ;; Version: 0.2.0
 ;; Package-Version: 0.2.0
 ;; Package-Requires: ((emacs "24.3"))
 
 ;;; Commentary:
 
-;; This package provides the rufo-mode minor mode, which will use rufo
+;; This package provides the rufo-minor-mode minor mode, which will use rufo
 ;; (https://github.com/asterite/rufo) to automatically fix ruby code
 ;; when it is saved.
 
 ;; To use it, require it, make sure `rufo' is in your path and add it to
 ;; your favorite ruby mode:
 
-;;    (add-hook 'ruby-mode-hook #'rufo-mode)
-
-;;; License:
-
-;; This file is not part of GNU Emacs.
-;; However, it is distributed under the same license.
-
-;; GNU Emacs is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 3, or (at your option)
-;; any later version.
-
-;; GNU Emacs is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
+;;    (add-hook 'ruby-mode-hook #'rufo-minor-mode)
 
 ;;; Code:
-(defgroup rufo-mode nil
+(defgroup rufo-minor-mode nil
   "Fix ruby code with rufo"
   :group 'tools)
 
-(defcustom rufo-mode-executable "rufo"
-  "The rufo executable used by `rufo-mode'."
-  :group 'rufo-mode
+(defcustom rufo-minor-mode-executable "rufo"
+  "The rufo executable name."
+  :group 'rufo-minor-mode
   :type 'string)
 
-(defcustom rufo-mode-use-bundler nil
-  "Whether rufo-mode should use the bundler version of rufo."
-  :group 'rufo-mode
+(defcustom rufo-minor-mode-use-bundler nil
+  "Whether ‘rufo-minor-mode’ should use the bundler version of rufo."
+  :group 'rufo-minor-mode
   :type 'boolean)
 
-(defcustom rufo-mode-debug-mode nil
-  "Whether rufo-mode should message debug information."
-  :group 'rufo-mode
+(defcustom rufo-minor-mode-debug-mode nil
+  "Whether ‘rufo-minor-mode’ should message debug information."
+  :group 'rufo-minor-mode
   :type 'boolean)
 
-(defvar-local rufo-mode--verified nil
+(defvar-local rufo-minor-mode--verified nil
   "Set to t if rufo has been verified as working for this buffer.")
 
-(defun rufo-mode--goto-line (line)
+(defun rufo-minor-mode--goto-line (line)
   "Move point to LINE."
   (goto-char (point-min))
   (forward-line (1- line)))
 
-(defun rufo-mode--apply-rcs-patch (patch-buffer)
+(defun rufo-minor-mode--apply-rcs-patch (patch-buffer)
   "Apply an RCS-formatted diff from PATCH-BUFFER to the current buffer."
   (let ((target-buffer (current-buffer))
         ;; Relative offset between buffer line numbers and line numbers
@@ -83,12 +92,12 @@
         (line-offset 0))
     (save-excursion
       (with-current-buffer patch-buffer
-        (if rufo-mode-debug-mode
+        (if rufo-minor-mode-debug-mode
             (message (concat "rufo diff: " (buffer-string))))
         (goto-char (point-min))
         (while (not (eobp))
           (unless (looking-at "^\\([ad]\\)\\([0-9]+\\) \\([0-9]+\\)")
-            (error "Invalid rcs patch or internal error in rufo-mode--apply-rcs-patch"))
+            (error "Invalid rcs patch or internal error in rufo-minor-mode--apply-rcs-patch"))
           (forward-line)
           (let ((action (match-string 1))
                 (from (string-to-number (match-string 2)))
@@ -105,30 +114,30 @@
                     (insert text)))))
              ((equal action "d")
               (with-current-buffer target-buffer
-                (rufo-mode--goto-line (- from line-offset))
+                (rufo-minor-mode--goto-line (- from line-offset))
                 (setq line-offset (+ line-offset len))
                 (kill-whole-line len)))
              (t
-              (error "Invalid rcs patch or internal error in rufo-mode--apply-rcs-patch")))))))))
+              (error "Invalid rcs patch or internal error in rufo-minor-mode--apply-rcs-patch")))))))))
 
-(defun rufo-mode--executable ()
+(defun rufo-minor-mode--executable ()
   "Return the executable for running rufo."
-  (if rufo-mode-use-bundler
+  (if rufo-minor-mode-use-bundler
       (executable-find "bundle")
-    (executable-find rufo-mode-executable)))
+    (executable-find rufo-minor-mode-executable)))
 
-(defun rufo-mode--args ()
+(defun rufo-minor-mode--args ()
   "Get the args for calling rufo."
   (let ((args
          (append
-          (if rufo-mode-use-bundler (list "exec" rufo-mode-executable))
+          (if rufo-minor-mode-use-bundler (list "exec" rufo-minor-mode-executable))
           (if buffer-file-name (list (concat "--filename=" (shell-quote-argument buffer-file-name)))))))
     (if (< 0 (length args)) args)))
 
-(defun rufo-mode--executable-available-p ()
+(defun rufo-minor-mode--executable-available-p ()
   "Verify that the rufo executable exists."
-  (let ((executable (rufo-mode--executable))
-        (args (rufo-mode--args)))
+  (let ((executable (rufo-minor-mode--executable))
+        (args (rufo-minor-mode--args)))
     (and executable
          (zerop (call-process-shell-command (concat
                                              "("
@@ -138,16 +147,16 @@
                                              " --help"
                                              ")"))))))
 
-(defun rufo-mode--verify ()
-  "Set rufo-mode--verified to true if the executable is runnable."
-  (or rufo-mode--verified
-      (cond ((not (rufo-mode--executable-available-p))
-             (rufo-mode -1)
-             (message "rufo-mode: Could not find rufo.")
+(defun rufo-minor-mode--verify ()
+  "Set ‘rufo-minor-mode--verified’ to true if the executable is runnable."
+  (or rufo-minor-mode--verified
+      (cond ((not (rufo-minor-mode--executable-available-p))
+             (rufo-minor-mode -1)
+             (message "rufo-minor-mode: Could not find rufo.")
              nil)
-            (t (setq-local rufo-mode--verified t)))))
+            (t (setq-local rufo-minor-mode--verified t)))))
 
-(defun rufo-mode--kill-error-buffer (errbuf)
+(defun rufo-minor-mode--kill-error-buffer (errbuf)
   "Kill buffer ERRBUF."
   (let ((win (get-buffer-window errbuf)))
     (if win
@@ -164,12 +173,12 @@
          (errorfile (make-temp-file "rufo-errors" nil ext))
          (errbuf (get-buffer-create "*rufo errors*"))
          (patchbuf (get-buffer-create "*rufo patch*"))
-         (executable (rufo-mode--executable))
+         (executable (rufo-minor-mode--executable))
          (coding-system-for-read 'utf-8)
          (coding-system-for-write 'utf-8)
-         (rufo-args (rufo-mode--args))
+         (rufo-args (rufo-minor-mode--args))
          )
-    (if (rufo-mode--verify)
+    (if (rufo-minor-mode--verify)
         (unwind-protect
             (save-restriction
               (with-current-buffer errbuf
@@ -181,21 +190,21 @@
               (apply 'call-process-region (point-min) (point-max) executable nil (list :file outputfile) nil rufo-args)
             (call-process-region (point-min) (point-max) executable nil (list :file outputfile) nil))
           (call-process-region nil nil "diff" nil patchbuf nil "-n" "--text" "-" outputfile)
-          (rufo-mode--apply-rcs-patch patchbuf)
+          (rufo-minor-mode--apply-rcs-patch patchbuf)
           (message "Applied rufo with args `%s'" rufo-args)
-          (if errbuf (rufo-mode--kill-error-buffer errbuf))))
+          (if errbuf (rufo-minor-mode--kill-error-buffer errbuf))))
       (kill-buffer patchbuf)
       (delete-file errorfile)
       (delete-file outputfile)))
 
 ;;;###autoload
-(define-minor-mode rufo-mode
+(define-minor-mode rufo-minor-mode
   "Use rufo to automatically fix ruby before saving."
   :lighter " rufo"
-  (if rufo-mode
+  (if rufo-minor-mode
       (add-hook 'before-save-hook #'rufo-format nil t)
-    (setq-local rufo-mode--verified nil)
+    (setq-local rufo-minor-mode--verified nil)
     (remove-hook 'before-save-hook #'rufo-format t)))
 
-(provide 'rufo-mode)
-;;; rufo-mode.el ends here
+(provide 'rufo-minor-mode)
+;;; rufo.el ends here

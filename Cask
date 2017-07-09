@@ -1,8 +1,8 @@
 (source gnu)
 (source melpa)
 
-(package "rufo-mode.el" "0.0.1" "Rufo integration for Emacs.")
-(package-file "rufo-mode.el")
+(package "rufo.el" "0.2.0" "Rufo integration for Emacs.")
+(package-file "rufo.el")
 
 (development
  (depends-on "f")
