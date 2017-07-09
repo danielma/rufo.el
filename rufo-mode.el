@@ -67,32 +67,6 @@
   (goto-char (point-min))
   (forward-line (1- line)))
 
-(defun rufo-mode--delete-whole-line (&optional arg)
-    "Delete the current line without putting it in the `kill-ring'.
-Derived from function `kill-whole-line'.  ARG is defined as for that
-function."
-    (setq arg (or arg 1))
-    (if (and (> arg 0)
-             (eobp)
-             (save-excursion (forward-visible-line 0) (eobp)))
-        (signal 'end-of-buffer nil))
-    (if (and (< arg 0)
-             (bobp)
-             (save-excursion (end-of-visible-line) (bobp)))
-        (signal 'beginning-of-buffer nil))
-    (cond ((zerop arg)
-           (delete-region (progn (forward-visible-line 0) (point))
-                          (progn (end-of-visible-line) (point))))
-          ((< arg 0)
-           (delete-region (progn (end-of-visible-line) (point))
-                          (progn (forward-visible-line (1+ arg))
-                                 (unless (bobp)
-                                   (backward-char))
-                                 (point))))
-          (t
-           (delete-region (progn (forward-visible-line 0) (point))
-                                                  (progn (forward-visible-line arg) (point))))))
-
 (defun rufo-mode--apply-rcs-patch (patch-buffer)
   "Apply an RCS-formatted diff from PATCH-BUFFER to the current buffer."
   (let ((target-buffer (current-buffer))
@@ -133,7 +107,7 @@ function."
               (with-current-buffer target-buffer
                 (rufo-mode--goto-line (- from line-offset))
                 (setq line-offset (+ line-offset len))
-                (rufo-mode--delete-whole-line len)))
+                (kill-whole-line len)))
              (t
               (error "Invalid rcs patch or internal error in rufo-mode--apply-rcs-patch")))))))))
 
