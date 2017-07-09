@@ -206,5 +206,5 @@
     (setq-local rufo-minor-mode--verified nil)
     (remove-hook 'before-save-hook #'rufo-format t)))
 
-(provide 'rufo-minor-mode)
+(provide 'rufo)
 ;;; rufo.el ends here
