@@ -1,4 +1,4 @@
-# rufo.el [![Build Status](https://travis-ci.org/danielma/rufo-mode.el.svg?branch=master)](https://travis-ci.org/danielma/rufo-mode.el)
+# rufo.el [![Build Status](https://travis-ci.org/danielma/rufo.el.svg?branch=master)](https://travis-ci.org/danielma/rufo.el)
 
 TODO: add to melpa
 
