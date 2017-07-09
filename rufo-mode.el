@@ -148,7 +148,7 @@ function."
   (let ((args
          (append
           (if rufo-mode-use-bundler (list "exec" rufo-mode-executable))
-          (if buffer-file-name (list (concat "--filename=" buffer-file-name))))))
+          (if buffer-file-name (list (concat "--filename=" (shell-quote-argument buffer-file-name)))))))
     (if (< 0 (length args)) args)))
 
 (defun rufo-mode--executable-available-p ()
