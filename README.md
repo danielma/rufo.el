@@ -34,6 +34,7 @@ You can enable `rufo-minor-mode-debug-mode` which will output additional info in
 
 * [@aaronjensen][] for [eslintd-fix][], which I forked for this project
 * The authors of [go-mode.el][], from which I copied the RCS diff application code
+* All [contributors](https://github.com/danielma/rufo.el/graphs/contributors)
 
 [rufo]: https://github.com/asterite/rufo
 [eslintd-fix]: https://github.com/aaronjensen/eslintd-fix
