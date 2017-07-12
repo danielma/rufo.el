@@ -1,4 +1,5 @@
-# rufo.el [![Build Status](https://travis-ci.org/danielma/rufo.el.svg?branch=master)](https://travis-ci.org/danielma/rufo.el) [![MELPA](https://melpa.org/packages/rufo-badge.svg)](https://melpa.org/#/rufo)
+# rufo.el [![Build Status](https://travis-ci.org/danielma/rufo.el.svg?branch=master)](https://travis-ci.org/danielma/rufo.el) [![MELPA](https://melpa.org/packages/rufo-badge.svg)](https://melpa.org/#/rufo) [![MELPA Stable](https://stable.melpa.org/packages/rufo-badge.svg)](https://stable.melpa.org/#/rufo)
+
 
 Minor-mode to automatically format ruby with [rufo][].
 
