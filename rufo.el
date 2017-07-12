@@ -165,6 +165,10 @@
         (erase-buffer))
       (kill-buffer errbuf))))
 
+(defun rufo-minor-mode--should-apply-patch-p (rufo-status-code)
+  "Check if the file needs changes based on `RUFO-STATUS-CODE'."
+  (eq rufo-status-code 3))
+
 (defun rufo-format ()
   "Format the current buffer with rufo."
   (interactive)
@@ -190,7 +194,7 @@
           (setq rufo-call-result (if rufo-args
                                      (apply 'call-process-region (point-min) (point-max) executable nil (list :file outputfile) nil rufo-args)
                                    (call-process-region (point-min) (point-max) executable nil (list :file outputfile) nil)))
-          (when (eq 0 rufo-call-result)
+          (when (rufo-minor-mode--should-apply-patch-p rufo-call-result)
             (call-process-region nil nil "diff" nil patchbuf nil "-n" "--text" "-" outputfile)
             (rufo-minor-mode--apply-rcs-patch patchbuf)
             (message "Applied rufo with args `%s'" rufo-args)
