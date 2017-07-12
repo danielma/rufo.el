@@ -2,6 +2,8 @@
 
 Minor-mode to automatically format ruby with [rufo][].
 
+**Note:** `rufo.el` only supports `rufo >= 0.0.38` because of the [exit codes introduced in that version](https://github.com/asterite/rufo/pull/109)
+
 ## Usage
 
 Ensure that you have [rufo][] installed and in your path.
