@@ -1,0 +1,4 @@
+* Now
+** TODO show error buffer for a `1` exit code
+   
+* Someday
