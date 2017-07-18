@@ -37,7 +37,7 @@ You can enable `rufo-minor-mode-debug-mode` which will output additional info in
 * The authors of [go-mode.el][], from which I copied the RCS diff application code
 * All [contributors](https://github.com/danielma/rufo.el/graphs/contributors)
 
-[rufo]: https://github.com/asterite/rufo
+[rufo]: https://github.com/ruby-formatter/rufo
 [eslintd-fix]: https://github.com/aaronjensen/eslintd-fix
 [@aaronjensen]: https://github.com/aaronjensen
 [go-mode.el]: https://github.com/dominikh/go-mode.el
