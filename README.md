@@ -3,7 +3,7 @@
 
 Minor-mode to automatically format ruby with [rufo][].
 
-**Note:** `rufo.el` only supports `rufo >= 0.0.38`.
+**Note:** `rufo.el` only supports `rufo >= 0.0.38` because of [the exit codes introduced in that version](https://github.com/ruby-formatter/rufo/commit/068bf0b417f4b8a82c5b14f7d5858f5cdf42a713).
 
 ## Usage
 
