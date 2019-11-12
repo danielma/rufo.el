@@ -12,7 +12,7 @@ Ensure that you have [rufo][] installed and in your path.
 Then, in your `init.el`:
 
 ```elisp
-(add-hook 'ruby-mode 'rufo-minor-mode)
+(add-hook 'ruby-mode-hook 'rufo-minor-mode)
 ```
 
 ## Options
